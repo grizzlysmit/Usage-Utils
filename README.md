@@ -20,13 +20,9 @@ Table of Contents
 
   * [grammar UsageStr & action class UsageStrActions](#grammar-usagestr--action-class-usagestractions)
 
-  * [Introduction](#introduction)
+  * [say-coloured(…)](#say-coloured)
 
-  * [Introduction](#introduction)
-
-  * [Introduction](#introduction)
-
-  * [Introduction](#introduction)
+  * [You need to implement these or similar in your code](#you-need-to-implement-these-or-similar-in-your-code)
 
 NAME
 ====
@@ -69,7 +65,7 @@ This is a Raku Module for those who like to colour their Usage messages.
 
 ```raku
 grammar UsageStr is BasePaths is export {
-    token TOP               { ^ 'Usage:' [ \v+ <usage-line> ]+ \v* $ }
+    token TOP               { ^ 'Usage:' \h* [ \v+ <usage-line> ]+ \v* $ }
     token usage-line        { ^^ \h* <prog> <fixed-args-spec> <pos-spec> <optionals-spec> <slurpy-array-spec> <options-spec> <slurpy-hash-spec> \h* $$ }
     token fixed-args-spec   { [ \h* <fixed-args> ]? }
     token pos-spec          { [ \h* <positional-args> ]? }
@@ -137,20 +133,23 @@ class UsageStrActions does BasePathsActions is export {
 } # class UsageStrActions does PathsActions is export #
 ```
 
+### say-coloured(…)
+
+A function to call from within a GENERATE-USAGE(&main, |capture --> Int) 
+
+```raku
+sub say-coloured(Str:D $USAGE, Bool:D $nocoloured, *%named-args, *@args --> True) is export
+```
+
 [Top of Document](#table-of-contents)
 
-### you need to implement these or similar in your code.
+### You need to implement these or similar in your code
 
 ```raku
 multi sub MAIN('help', Bool:D :n(:nocolor(:$nocolour)) = False, *%named-args, *@args) returns Int {
    my @_args is Array[Str] = |@args[1 .. *];
    #say @_args.shift;
    say-coloured($*USAGE, $nocolour, |%named-args, |@_args);
-   exit 0;
-}
-
-multi sub MAIN('test') returns Int {
-   test();
    exit 0;
 }
 

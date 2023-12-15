@@ -583,7 +583,8 @@ footer {
  <tr class="toc-level-1"><td class="toc-text"><a href="#Copyright">Copyright</a></td></tr>
  <tr class="toc-level-1"><td class="toc-text"><a href="#Introduction">Introduction</a></td></tr>
  <tr class="toc-level-3"><td class="toc-text"><a href="#grammar_UsageStr_&amp;_action_class_UsageStrActions">grammar UsageStr &amp; action class UsageStrActions</a></td></tr>
- <tr class="toc-level-3"><td class="toc-text"><a href="#you_need_to_implement_these_or_similar_in_your_code.">you need to implement these or similar in your code.</a></td></tr>
+ <tr class="toc-level-3"><td class="toc-text"><a href="#say-coloured(…)">say-coloured(…)</a></td></tr>
+ <tr class="toc-level-3"><td class="toc-text"><a href="#You_need_to_implement_these_or_similar_in_your_code">You need to implement these or similar in your code</a></td></tr>
 </table></div>
 </nav><div id="Usage::Utils_0"></div><div class="subtitle"><p>A Raku module to provide syntax highlighting for the <strong><code>$*USAGE</code></strong> string. </p></div><div class="pod-body"><section name="___top"><h1 id="Usage::Utils"><a href="#___top" class="u" title="go to top of document">Usage::Utils</a></h1>
 <h2 id="Table_of_Contents"><a href="#___top" class="u" title="go to top of document">Table of Contents</a></h2>
@@ -596,10 +597,8 @@ footer {
 <li><p><a href="#copyright">COPYRIGHT</a></p></li>
 <li><p><a href="#introduction">Introduction</a></p></li>
 <li><p><a href="#grammar-usagestr--action-class-usagestractions">grammar UsageStr &amp; action class UsageStrActions</a></p></li>
-<li><p><a href="#introduction">Introduction</a></p></li>
-<li><p><a href="#introduction">Introduction</a></p></li>
-<li><p><a href="#introduction">Introduction</a></p></li>
-<li><p><a href="#introduction">Introduction</a></p></li>
+<li><p><a href="#say-coloured">say-coloured(…)</a></p></li>
+<li><p><a href="#you-need-to-implement-these-or-similar-in-your-code">You need to implement these or similar in your code</a></p></li>
 </ul>
 <section>
 <h1 id="Name"><a href="#___top" class="u" title="go to top of document">NAME</a></h1>
@@ -612,7 +611,7 @@ footer {
 <p><a href="#table-of-contents">Top of Document</a></p><h1 id="Introduction"><a href="#Usage::Utils_0" class="u" title="go to top of document">Introduction</a></h1>
 <p>This is a Raku Module for those who like to colour their Usage messages. </p></section><section name="pod"><h3 id="grammar_UsageStr_&amp;_action_class_UsageStrActions"><a href="#Usage::Utils_0" class="u" title="go to top of document">grammar UsageStr &amp; action class UsageStrActions</a></h3>
 <pre class="pod-block-code">grammar UsageStr is BasePaths is export {
-    token TOP               { ^ 'Usage:' [ \v+ &lt;usage-line&gt; ]+ \v* $ }
+    token TOP               { ^ 'Usage:' \h* [ \v+ &lt;usage-line&gt; ]+ \v* $ }
     token usage-line        { ^^ \h* &lt;prog&gt; &lt;fixed-args-spec&gt; &lt;pos-spec&gt; &lt;optionals-spec&gt; &lt;slurpy-array-spec&gt; &lt;options-spec&gt; &lt;slurpy-hash-spec&gt; \h* $$ }
     token fixed-args-spec   { [ \h* &lt;fixed-args&gt; ]? }
     token pos-spec          { [ \h* &lt;positional-args&gt; ]? }
@@ -679,16 +678,14 @@ class UsageStrActions does BasePathsActions is export {
     }
 } # class UsageStrActions does PathsActions is export #
 
-</pre></section><section name="pod"><p><a href="#table-of-contents">Top of Document</a></p><h3 id="you_need_to_implement_these_or_similar_in_your_code."><a href="#Usage::Utils_0" class="u" title="go to top of document">you need to implement these or similar in your code.</a></h3>
+</pre></section><section name="pod"><h3 id="say-coloured(…)"><a href="#Usage::Utils_0" class="u" title="go to top of document">say-coloured(…)</a></h3>
+<p>A function to call from within a GENERATE-USAGE(&amp;main, |capture --&gt; Int) </p><pre class="pod-block-code">sub say-coloured(Str:D $USAGE, Bool:D $nocoloured, *%named-args, *@args --&gt; True) is export 
+
+</pre></section><section name="pod"><p><a href="#table-of-contents">Top of Document</a></p><h3 id="You_need_to_implement_these_or_similar_in_your_code"><a href="#Usage::Utils_0" class="u" title="go to top of document">You need to implement these or similar in your code</a></h3>
 <pre class="pod-block-code">multi sub MAIN('help', Bool:D :n(:nocolor(:$nocolour)) = False, *%named-args, *@args) returns Int {
    my @_args is Array[Str] = |@args[1 .. *];
    #say @_args.shift;
    say-coloured($*USAGE, $nocolour, |%named-args, |@_args);
-   exit 0;
-}
-
-multi sub MAIN('test') returns Int {
-   test();
    exit 0;
 }
 
@@ -717,7 +714,7 @@ multi sub GENERATE-USAGE(&amp;main, |capture --&gt; Int) {
 }
 
 </pre><p><a href="#table-of-contents">Top of Document</a></p></section>		</div>
-</div><footer><div>Rendered from <span class="path">UNNAMED</span></div><div>at <span class="time">2023-12-15T19:55:42Z</span></div></footer>
+</div><footer><div>Rendered from <span class="path">UNNAMED</span></div><div>at <span class="time">2023-12-15T21:56:15Z</span></div></footer>
 	</body>
 </html>
 

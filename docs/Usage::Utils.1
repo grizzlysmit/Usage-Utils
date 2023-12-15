@@ -19,13 +19,9 @@ Introduction [#introduction]
 .IP \(bu 2m
 grammar UsageStr & action class UsageStrActions [#grammar-usagestr--action-class-usagestractions]
 .IP \(bu 2m
-Introduction [#introduction]
+say\-coloured(…) [#say-coloured]
 .IP \(bu 2m
-Introduction [#introduction]
-.IP \(bu 2m
-Introduction [#introduction]
-.IP \(bu 2m
-Introduction [#introduction]
+You need to implement these or similar in your code [#you-need-to-implement-these-or-similar-in-your-code]
 .SH "NAME"
 Usage::Utils 
 .SH "AUTHOR"
@@ -48,7 +44,7 @@ This is a Raku Module for those who like to colour their Usage messages\&.
 .RS 4m
 .EX
 grammar UsageStr is BasePaths is export {
-    token TOP               { ^ 'Usage:' [ \v+ <usage\-line> ]+ \v* $ }
+    token TOP               { ^ 'Usage:' \h* [ \v+ <usage\-line> ]+ \v* $ }
     token usage\-line        { ^^ \h* <prog> <fixed\-args\-spec> <pos\-spec> <optionals\-spec> <slurpy\-array\-spec> <options\-spec> <slurpy\-hash\-spec> \h* $$ }
     token fixed\-args\-spec   { [ \h* <fixed\-args> ]? }
     token pos\-spec          { [ \h* <positional\-args> ]? }
@@ -118,8 +114,19 @@ class UsageStrActions does BasePathsActions is export {
 
 .EE
 .RE
+.SS say\-coloured(…)
+
+A function to call from within a GENERATE\-USAGE(&main, |capture \-\-> Int) 
+
+.RS 4m
+.EX
+sub say\-coloured(Str:D $USAGE, Bool:D $nocoloured, *%named\-args, *@args \-\-> True) is export 
+
+
+.EE
+.RE
 Top of Document [#table-of-contents]
-.SS you need to implement these or similar in your code\&.
+.SS You need to implement these or similar in your code
 
 .RS 4m
 .EX
@@ -127,11 +134,6 @@ multi sub MAIN('help', Bool:D :n(:nocolor(:$nocolour)) = False, *%named\-args, *
    my @_args is Array[Str] = |@args[1 \&.\&. *];
    #say @_args\&.shift;
    say\-coloured($*USAGE, $nocolour, |%named\-args, |@_args);
-   exit 0;
-}
-
-multi sub MAIN('test') returns Int {
-   test();
    exit 0;
 }
 

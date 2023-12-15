@@ -18,10 +18,8 @@ Table of  Contents
 =item1 L<COPYRIGHT|#copyright>
 =item1 L<Introduction|#introduction>
 =item1 L<grammar UsageStr & action class UsageStrActions|#grammar-usagestr--action-class-usagestractions>
-=item1 L<Introduction|#introduction>
-=item1 L<Introduction|#introduction>
-=item1 L<Introduction|#introduction>
-=item1 L<Introduction|#introduction>
+=item1 L<say-coloured(…)|#say-coloured>
+=item1 L<You need to implement these or similar in your code|#you-need-to-implement-these-or-similar-in-your-code>
 
 
 =NAME Usage::Utils 
@@ -42,10 +40,12 @@ This is a Raku Module for those who like to colour their Usage messages.
 
 =end pod
 
+my Bool:D $debug = False;
+
 use Terminal::ANSI::OO :t;
 use Terminal::Width;
 use Terminal::WCWidth;
-#use Grammar::Debugger;
+#use Grammar::Debugger; $debug = True;
 #use Grammar::Tracer;
 use Gzz::Text::Utils;
 use Parse::Paths;
@@ -68,7 +68,7 @@ use Parse::Paths;
 =begin code :lang<raku>
 
 grammar UsageStr is BasePaths is export {
-    token TOP               { ^ 'Usage:' [ \v+ <usage-line> ]+ \v* $ }
+    token TOP               { ^ 'Usage:' \h* [ \v+ <usage-line> ]+ \v* $ }
     token usage-line        { ^^ \h* <prog> <fixed-args-spec> <pos-spec> <optionals-spec> <slurpy-array-spec> <options-spec> <slurpy-hash-spec> \h* $$ }
     token fixed-args-spec   { [ \h* <fixed-args> ]? }
     token pos-spec          { [ \h* <positional-args> ]? }
@@ -140,7 +140,7 @@ class UsageStrActions does BasePathsActions is export {
 =end pod
 
 grammar UsageStr is BasePaths is export {
-    token TOP               { ^ 'Usage:' [ \v+ <usage-line> ]+ \v* $ }
+    token TOP               { ^ 'Usage:' \h* [ \v+ <usage-line> ]+ \v* $ }
     token usage-line        { ^^ \h* <prog> <fixed-args-spec> <pos-spec> <optionals-spec> <slurpy-array-spec> <options-spec> <slurpy-hash-spec> \h* $$ }
     token fixed-args-spec   { [ \h* <fixed-args> ]? }
     token pos-spec          { [ \h* <positional-args> ]? }
@@ -178,10 +178,12 @@ class UsageStrActions does BasePathsActions is export {
         } else {
             $prog = $/<prog-name>.made;
         }
+        dd $prog if $debug;
         make $prog;
     }
     method prog-name($/) {
         my $prog-name = ~$/;
+        dd $prog-name if $debug;
         make $prog-name;
     }
     method fixed-args-spec($/) {
@@ -189,14 +191,17 @@ class UsageStrActions does BasePathsActions is export {
         if $/<fixed-args> {
             @fixed-args-spec = $/<fixed-args>.made;
         }
+        dd @fixed-args-spec if $debug;
         make @fixed-args-spec;
     }
     method fixed-args($/) {
         my @fixed-args = $/<fixed-arg>».made;
+        dd @fixed-args if $debug;
         make @fixed-args;
     }
     method fixed-arg($/) {
         my $fixed-arg = ~$/;
+        dd $fixed-arg if $debug;
         make $fixed-arg;
     }
     method pos-spec($/) {
@@ -204,14 +209,17 @@ class UsageStrActions does BasePathsActions is export {
         if $/<positional-args> {
             @pos-spec = $/<positional-args>.made;
         }
+        dd @pos-spec if $debug;
         make @pos-spec;
     }
     method positional-args($/) {
         my @positional-args = $/<positional-arg>».made;
+        dd @positional-args if $debug;
         make @positional-args;
     }
     method positional-arg($/) {
         my $positional-arg = ~$/;
+        dd $positional-arg if $debug;
         make $positional-arg;
     }
     method optionals-spec($/) {
@@ -219,14 +227,17 @@ class UsageStrActions does BasePathsActions is export {
         if $/<optionals> {
             @optionals-spec = $/<optionals>.made;
         }
+        dd @optionals-spec if $debug;
         make @optionals-spec;
     }
     method optionals($/) {
         my @optionals = $/<optional>».made;
+        dd @optionals if $debug;
         make @optionals;
     }
     method optional($/) {
         my $optional = ~$/;
+        dd $optional if $debug;
         make $optional;
     }
     method slurpy-array-spec($/) {
@@ -234,10 +245,12 @@ class UsageStrActions does BasePathsActions is export {
         if $/<slurpy-array> {
             $slurpy-array-spec = $/<slurpy-array>.made;
         }
+        dd $slurpy-array-spec if $debug;
         make $slurpy-array-spec;
     }
     method slurpy-array($/) {
         my $slurpy-array = ~$/;
+        dd $slurpy-array if $debug;
         make $slurpy-array;
     }
     method options-spec($/) {
@@ -245,10 +258,12 @@ class UsageStrActions does BasePathsActions is export {
         if $/<options> {
             @options-spec = $/<options>.made;
         }
+        dd @options-spec if $debug;
         make @options-spec;
     }
     method options($/) {
         my @options = $/<option>».made;
+        dd @options if $debug;
         make @options;
     }
     method option($/) {
@@ -260,18 +275,23 @@ class UsageStrActions does BasePathsActions is export {
         } elsif $<bool-opt> {
             $option = $/<bool-opt>.made;
         }
+        dd $option if $debug;
         make $option;
     }
     method int-opt($/) {
         my $int-opt = '[' ~ $/<opts>.made ~ '[=Int]]';
+        dd $int-opt if $debug;
         make $int-opt;
     }
     method other-opt($/) {
         my $other-opt = '[' ~ $/<opts>.made ~ '=<' ~ $/<type> ~ '>]';
+        dd $other-opt if $debug;
+        dd $other-opt if $debug;
         make $other-opt;
     }
     method bool-opt($/) {
         my $bool-opt = '[' ~ $/<opts>.made ~ ']';
+        dd $bool-opt if $debug;
         make $bool-opt;
     }
     method opts($/) {
@@ -285,18 +305,22 @@ class UsageStrActions does BasePathsActions is export {
         } elsif $/<long-opt> {
             $opt = $/<long-opt>.made;
         }
+        dd $opt if $debug;
         make $opt;
     }
     method short-opt($/) {
         my $short-opt = ~$/;
+        dd $short-opt if $debug;
         make $short-opt;
     }
     method long-opt($/) {
         my $long-opt = ~$/;
+        dd $long-opt if $debug;
         make $long-opt;
     }
     method type($/) {
         my $type = ~$/;
+        dd $type if $debug;
         make $type;
     }
     method slurpy-hash-spec($/) {
@@ -304,10 +328,12 @@ class UsageStrActions does BasePathsActions is export {
         if $/<slurpy-hash> {
             $slurpy-hash-spec = $/<slurpy-hash>.made;
         }
+        dd $slurpy-hash-spec if $debug;
         make $slurpy-hash-spec;
     }
     method slurpy-hash($/) {
         my $slurpy-hash = ~$/;
+        dd $slurpy-hash if $debug;
         make $slurpy-hash;
     }
     method usage-line($/) {
@@ -316,14 +342,30 @@ class UsageStrActions does BasePathsActions is export {
         slurpy-array => $/<slurpy-array-spec>.made, options => $/<options-spec>.made,
         slurpy-hash => $/<slurpy-hash-spec>.made;
         my %usage-line = kind => 'usage-line', value => %line;
+        dd %usage-line if $debug;
         make %usage-line;
     }
     method TOP($made) {
         my %u   = kind => 'usage', value => 'Usage:';
         my @top = %u, |($made<usage-line>».made);
+        dd @top if $debug;
         $made.make: @top;
     }
 } # class UsageStrActions does PathsActions is export #
+
+=begin pod
+
+=head3 say-coloured(…)
+
+A function to call from within a GENERATE-USAGE(&main, |capture --> Int) 
+
+=begin code :lang<raku>
+
+sub say-coloured(Str:D $USAGE, Bool:D $nocoloured, *%named-args, *@args --> True) is export 
+
+=end code
+
+=end pod
 
 sub say-coloured(Str:D $USAGE, Bool:D $nocoloured, *%named-args, *@args --> True) is export {
     my @usage = $USAGE.split("\n");
@@ -332,6 +374,7 @@ sub say-coloured(Str:D $USAGE, Bool:D $nocoloured, *%named-args, *@args --> True
     my $actions = UsageStrActions;
     #my $test = UsageStr.parse(@usage.join("\x0A"), :enc('UTF-8'), :$actions).made;
     #dd $test, $?NL;
+    #dd @usage;
     my @usage-struct = |(UsageStr.parse(@usage.join("\x0A"), :enc('UTF-8'), :$actions).made);
     my Int:D $width = 0;
     if $nocoloured {
@@ -621,7 +664,7 @@ sub say-coloured(Str:D $USAGE, Bool:D $nocoloured, *%named-args, *@args --> True
 
 L<Top of Document|#table-of-contents>
 
-=head3 you need to implement these or similar in your code.
+=head3 You need to implement these or similar in your code
 
 =begin code :lang<raku>
 
@@ -630,11 +673,6 @@ multi sub MAIN('help', Bool:D :n(:nocolor(:$nocolour)) = False, *%named-args, *@
    my @_args is Array[Str] = |@args[1 .. *];
    #say @_args.shift;
    say-coloured($*USAGE, $nocolour, |%named-args, |@_args);
-   exit 0;
-}
-
-multi sub MAIN('test') returns Int {
-   test();
    exit 0;
 }
 

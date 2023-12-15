@@ -4,3 +4,54 @@ use Test;
 
 use Usage::Utils;
 
+plan 1;
+
+my %named-args = nocolour => True;
+my @args;
+
+my $input = q:to/INPUT/;
+Usage:                                                                                                                                      
+  sc ssh <key>                                                                                                                              
+  sc ping <key>                                                                                                                             
+  sc get home <key>  [<args> ...] [-r|--recursive]                                                                                          
+  sc put home <key>  [<args> ...] [-r|--recursive]                                                                                          
+  sc edit configs                                                                                                                           
+  sc list keys  [<prefix>]  [-c|--color|--colour] [-s|--syntax] [-l|--page-length[=Int]] [-p|--pattern=<Str>] [-e|--ecma-pattern=<Str>]     
+  sc list all  [<prefix>]  [-c|--color|--colour] [-s|--syntax] [-l|--page-length[=Int]] [-p|--pattern=<Str>] [-e|--ecma-pattern=<Str>]      
+  sc list hosts  [<prefix>]  [-c|--color|--colour] [-s|--syntax] [-l|--page-length[=Int]] [-p|--pattern=<Str>] [-e|--ecma-pattern=<Str>]    
+  sc list by both  [<prefix>]  [-c|--color|--colour] [-s|--syntax] [-l|--page-length[=Int]] [-p|--pattern=<Str>] [-e|--ecma-pattern=<Str>]  
+  sc list commented out    [-c|--color|--colour] [-s|--syntax]                                                                              
+  sc list trash    [-c|--color|--colour] [-s|--syntax]                                                                                      
+  sc stats    [-c|--color|--colour] [-s|--syntax]                                                                                           
+  sc statistics    [-c|--color|--colour] [-s|--syntax]                                                                                      
+  sc add <key> <host> [<port>]  [-s|--set|--force] [-c|--comment=<Str>]                                                                     
+  sc delete   [<keys> ...] [-o|--comment-out]                                                                                               
+  sc del   [<keys> ...] [-o|--comment-out]                                                                                                  
+  sc trash   [<keys> ...]                                                                                                                   
+  sc empty trash                                                                                                                            
+  sc undelete   [<keys> ...]                                                                                                                
+  sc comment <key> <comment>                                                                                                                
+  sc alias <key> <target>   [-s|--set|--force] [-d|--really-force|--overwrite-hosts] [-c|--comment=<Str>]                                   
+  sc backup db    [-w|--win-format|--use-windows-formating]                                                                                 
+  sc restore db  [<restore-from>]                                                                                                           
+  sc list editors    [-c|--color|--colour] [-s|--syntax]                                                                                    
+  sc list editors file    [-c|--color|--colour] [-s|--syntax]                                                                               
+  sc editors stats    [-c|--color|--colour] [-s|--syntax]                                                                                   
+  sc list editors backups    [-c|--color|--colour] [-s|--syntax]                                                                            
+  sc backup editors    [-w|--use-windows-formatting]                                                                                        
+  sc restore editors <restore-from>                                                                                                         
+  sc set editor <editor> [<comment>]                                                                                                        
+  sc set override GUI_EDITOR <value> [<comment>]                                                                                            
+  sc menu restore editors  [<message>]  [-c|--color|--colour] [-s|--syntax]                                                                 
+  sc tidy file                                                                                                                              
+  sc sort file                                                                                                                              
+  sc show file    [-c|--color|--colour]                                                                                                     
+  sc help   [<args> ...] [-n|--nocolor|--nocolour] [--<named-args>=...]                                                                     
+  sc test
+INPUT
+
+my @input = $input.trim.split("\n");
+
+#say @input.join("\x0A");
+
+is(say-coloured(@input.join("\x0A"), True, |%named-args, |@args), True);
