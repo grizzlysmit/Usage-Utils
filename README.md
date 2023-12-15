@@ -58,6 +58,8 @@ COPYRIGHT
 
 LGPL V3.0+ [LICENSE](https://github.com/grizzlysmit/Usage-Utils/blob/main/LICENSE)
 
+[Top of Document](#table-of-contents)
+
 Introduction
 ============
 
@@ -135,6 +137,8 @@ class UsageStrActions does BasePathsActions is export {
 } # class UsageStrActions does PathsActions is export #
 ```
 
+[Top of Document](#table-of-contents)
+
 ### you need to implement these or similar in your code.
 
 ```raku
@@ -174,4 +178,6 @@ multi sub GENERATE-USAGE(&main, |capture --> Int) {
     exit 0;
 }
 ```
+
+[Top of Document](#table-of-contents)
 

@@ -33,6 +33,8 @@ Table of  Contents
 =COPYRIGHT
 LGPL V3.0+ L<LICENSE|https://github.com/grizzlysmit/Usage-Utils/blob/main/LICENSE>
 
+L<Top of Document|#table-of-contents>
+
 =head1 Introduction
 
 This is a Raku Module for those who like to colour their Usage messages. 
@@ -617,6 +619,8 @@ sub say-coloured(Str:D $USAGE, Bool:D $nocoloured, *%named-args, *@args --> True
 
 =begin pod
 
+L<Top of Document|#table-of-contents>
+
 =head3 you need to implement these or similar in your code.
 
 =begin code :lang<raku>
@@ -659,5 +663,7 @@ multi sub GENERATE-USAGE(&main, |capture --> Int) {
 }
 
 =end code
+
+L<Top of Document|#table-of-contents>
 
 =end pod

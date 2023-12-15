@@ -609,7 +609,7 @@ footer {
 <h1 id="Copyright"><a href="#Usage::Utils_0" class="u" title="go to top of document">COPYRIGHT</a></h1>
 <p>LGPL V3.0+ <a href="https://github.com/grizzlysmit/Usage-Utils/blob/main/LICENSE">LICENSE</a></p>
 </section>
-<h1 id="Introduction"><a href="#Usage::Utils_0" class="u" title="go to top of document">Introduction</a></h1>
+<p><a href="#table-of-contents">Top of Document</a></p><h1 id="Introduction"><a href="#Usage::Utils_0" class="u" title="go to top of document">Introduction</a></h1>
 <p>This is a Raku Module for those who like to colour their Usage messages. </p></section><section name="pod"><h3 id="grammar_UsageStr_&amp;_action_class_UsageStrActions"><a href="#Usage::Utils_0" class="u" title="go to top of document">grammar UsageStr &amp; action class UsageStrActions</a></h3>
 <pre class="pod-block-code">grammar UsageStr is BasePaths is export {
     token TOP               { ^ 'Usage:' [ \v+ &lt;usage-line&gt; ]+ \v* $ }
@@ -679,7 +679,7 @@ class UsageStrActions does BasePathsActions is export {
     }
 } # class UsageStrActions does PathsActions is export #
 
-</pre></section><section name="pod"><h3 id="you_need_to_implement_these_or_similar_in_your_code."><a href="#Usage::Utils_0" class="u" title="go to top of document">you need to implement these or similar in your code.</a></h3>
+</pre></section><section name="pod"><p><a href="#table-of-contents">Top of Document</a></p><h3 id="you_need_to_implement_these_or_similar_in_your_code."><a href="#Usage::Utils_0" class="u" title="go to top of document">you need to implement these or similar in your code.</a></h3>
 <pre class="pod-block-code">multi sub MAIN('help', Bool:D :n(:nocolor(:$nocolour)) = False, *%named-args, *@args) returns Int {
    my @_args is Array[Str] = |@args[1 .. *];
    #say @_args.shift;
@@ -716,8 +716,8 @@ multi sub GENERATE-USAGE(&amp;main, |capture --&gt; Int) {
     exit 0;
 }
 
-</pre></section>		</div>
-</div><footer><div>Rendered from <span class="path">UNNAMED</span></div><div>at <span class="time">2023-12-15T17:03:22Z</span></div></footer>
+</pre><p><a href="#table-of-contents">Top of Document</a></p></section>		</div>
+</div><footer><div>Rendered from <span class="path">UNNAMED</span></div><div>at <span class="time">2023-12-15T17:06:27Z</span></div></footer>
 	</body>
 </html>
 
