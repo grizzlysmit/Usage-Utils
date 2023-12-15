@@ -1,6 +1,6 @@
 {
-    "name" : "Gzz::Text::Utils",
-    "description" : "A Raku module to provide text formatting services to Raku programs.  Including a \"sprintf\" alike function \"Sprintf\" that copes better with Ansi highlighted text ...",
+    "name" : "Usage::Utils",
+    "description" : "This is a Raku Module for those who like to colour their Usage messages.",
     "perl" : "6.d",
     "license" : "LGPL-3.0-or-later",
     "authors" : [
@@ -9,21 +9,22 @@
     "depends": [
         "Terminal::Width",
         "Terminal::WCWidth",
-        "Term::termios",
-        "Terminal::ANSI"
+        "Terminal::ANSI",
+        "Usage::Utils",
+        "Parse::Paths"
     ],
     "provides" : {
-        "Gzz::Text::Utils" : "lib/Gzz/Text/Utils.rakumod"
+        "Usage::Utils" : "lib/Usage/Utils.rakumod"
     },
-    "source-url" : "https://github.com/grizzlysmit/Gzz-Text-Utils.git",
+    "source-url" : "https://github.com/grizzlysmit/Usage-Utils.git",
     "support" : {
-        "source" : "https://github.com/grizzlysmit/Gzz-Text-Utils.git",
+        "source" : "https://github.com/grizzlysmit/Usage-Utils.git",
         "email" : "grizzly@smit.id.au",
-        "bugtracker": "https://github.com/grizzlysmit/Gzz-Text-Utils/issues"
+        "bugtracker": "https://github.com/grizzlysmit/Usage-Utils/issues"
     },
     "auth": "zef:grizzlysmit",
-    "version" : "0.1.17",
-    "tags" : [ "text", "formatting", "sprintf clone", "ANSI", "highlighted" ],
+    "version" : "0.1.0",
+    "tags" : [ "usage", "utils", "colored", "coloured", "highlighted" ],
   "test-depends": [
   ]
 }
