@@ -2,7 +2,7 @@ use v6;
 use lib 'lib';
 use Test;
 
-use Gzz::Text::Utils;
+use Usage::Utils;
 plan 1;
 
 constant AUTHOR = ?%*ENV<AUTHOR_TESTING>;
