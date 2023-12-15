@@ -10,7 +10,7 @@
         "Terminal::Width",
         "Terminal::WCWidth",
         "Terminal::ANSI",
-        "Usage::Utils",
+        "Gzz::Text::Utils",
         "Parse::Paths"
     ],
     "provides" : {
@@ -23,7 +23,7 @@
         "bugtracker": "https://github.com/grizzlysmit/Usage-Utils/issues"
     },
     "auth": "zef:grizzlysmit",
-    "version" : "0.1.0",
+    "version" : "0.1.1",
     "tags" : [ "usage", "utils", "colored", "coloured", "highlighted" ],
   "test-depends": [
   ]
