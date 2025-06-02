@@ -160,7 +160,10 @@ grammar UsageStr is BasePaths is export {
     regex options           { [ <option> [ \h+ <option> ]* ] }
     regex option            { [ <int-opt> || <other-opt> || <bool-opt> ] }
     regex int-opt           { [ '[' <opts> '[=Int]]' ] }
-    regex other-opt         { [ '[' <opts> '=<' <type> '>]' ] }
+    regex other-opt         { [ '[' <opts> '=<' <type> [ \h+ <where-clause> \h* ]? '>]' ] }
+    regex where-clause      { [ 'where' \h* '{' \h* <values> \h* '}' ] }
+    regex values            { [ <dots> ] }
+    regex dots              { [ '...' ] }
     regex bool-opt          { [ '[' <opts> ']' ] }
     token opts              { <opt> [ '|' <opt> ]* }
     regex opt               { [ <long-opt> || <short-opt> ] }
@@ -283,8 +286,36 @@ class UsageStrActions does BasePathsActions is export {
         dd $int-opt if $debug;
         make $int-opt;
     }
+    #`«
+    regex other-opt         { [ '[' <opts> '=<' <type> [ \h+ <where-clause> ]? '>]' ] }
+    regex where-clause      { [ 'where' \h* '\{' \h* <values> \h* '}' ] }
+    regex values            { [ <dots> ] }
+    regex dots              { [ '...' ] }
+    »
+    method dots($/) {
+        my $dots = ~$/;
+        dd $dots if $debug;
+        make $dots;
+    }
+    method values($/) {
+        my $values;
+        if $/<dots> {
+            $values = $/<dots>.made;
+        }
+        dd $values if $debug;
+        make $values;
+    }
+    method where-clause($/) {
+        my $where-clause = 'where \{ ' ~ $/<values>.made ~ ' }';
+        dd $where-clause if $debug;
+        make $where-clause;
+    }
     method other-opt($/) {
-        my $other-opt = '[' ~ $/<opts>.made ~ '=<' ~ $/<type> ~ '>]';
+        my $other-opt = '[' ~ $/<opts>.made ~ '=<' ~ $/<type>;
+        if $/<where-clause> {
+            $other-opt ~= ' ' ~ $/<where-clause>.made ~ ' ';
+        }
+        $other-opt ~= '>]';
         dd $other-opt if $debug;
         dd $other-opt if $debug;
         make $other-opt;
@@ -368,6 +399,7 @@ sub say-coloured(Str:D $USAGE, Bool:D $nocoloured, *%named-args, *@args --> True
 =end pod
 
 sub say-coloured(Str:D $USAGE, Bool:D $nocoloured, *%named-args, *@args --> True) is export {
+    #dd $USAGE;
     my @usage = $USAGE.split("\n");
     my Num:D $limit = ((%named-args«limit»:exists) ?? %named-args«limit».Num !! 75.Num);
     #dd @args, %named-args, $limit;
@@ -376,6 +408,7 @@ sub say-coloured(Str:D $USAGE, Bool:D $nocoloured, *%named-args, *@args --> True
     #dd $test, $?NL;
     #dd @usage;
     my @usage-struct = |(UsageStr.parse(@usage.join("\x0A"), :enc('UTF-8'), :$actions).made);
+    #dd @usage-struct;
     my Int:D $width = 0;
     if $nocoloured {
         for @usage-struct -> %line {
