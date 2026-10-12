@@ -1,4 +1,4 @@
-unit module Usage::Utils:ver<0.1.1>:auth<Francis Grizzly Smit (grizzlysmit@smit.id.au)>;
+unit module Usage::Utils:ver<0.1.3>:auth<Francis Grizzly Smit (grizzlysmit@smit.id.au)>;
 
 =begin pod
 
@@ -24,7 +24,7 @@ Table of  Contents
 
 =NAME Usage::Utils 
 =AUTHOR Francis Grizzly Smit (grizzly@smit.id.au)
-=VERSION v0.1.1
+=VERSION v0.1.3
 =TITLE Usage::Utils
 =SUBTITLE A Raku module to provide syntax highlighting for the B<C<$*USAGE>> string. 
 
@@ -141,13 +141,14 @@ class UsageStrActions does BasePathsActions is export {
 
 grammar UsageStr is BasePaths is export {
     token TOP               { ^ 'Usage:' \h* [ \v+ <usage-line> ]+ \v* $ }
-    token usage-line        { ^^ \h* <prog> <fixed-args-spec> <pos-spec> <optionals-spec> <slurpy-array-spec> <options-spec> <slurpy-hash-spec> \h* $$ }
+    token usage-line        { ^^ \h* <prog> <fixed-args-spec> <pos-spec> <optionals-spec> <slurpy-array-spec> <options-spec> <slurpy-hash-spec> <deculator-spec> \h* $$ }
     token fixed-args-spec   { [ \h* <fixed-args> ]? }
     token pos-spec          { [ \h* <positional-args> ]? }
     regex optionals-spec    { [ \h* <optionals> ]? }
     regex slurpy-array-spec { [ \h* <slurpy-array> ]? }
     token options-spec      { [ \h* <options> ]? }
     token slurpy-hash-spec  { [ \h* <slurpy-hash> ]? }
+    token deculator-spec    { [ \h* '-- ' \h* <dec-spec> ]? }
     token prog              { [ <prog-name> <!before [ '/' || '~/' || '~' ] > || <base-path> <prog-name> ] }
     token prog-name         { \w+ [ [ '-' || '+' || ':' || '@' || '=' || ',' || '%' || '.' ]+ \w+ ]* }
     token fixed-args        { [ <fixed-arg> [ \h+ <fixed-arg> ]* ]? }
@@ -171,6 +172,7 @@ grammar UsageStr is BasePaths is export {
     regex long-opt          { [ '--' \w ** {2 .. Inf} [ '-' \w+ ]* ] }
     regex type              { [ 'Str' || 'Num' || 'Rat' || 'Complex' || [ \w+ [ [ '-' || '::' ] \w+ ]* ] ] }
     regex slurpy-hash       { [ '[--<' [ \w+ [ '-' \w+ ]* ] '>=...]' ] }
+    regex dec-spec          { [ <-[\v]>+ ] }
 }
 
 class UsageStrActions does BasePathsActions is export {
@@ -367,11 +369,24 @@ class UsageStrActions does BasePathsActions is export {
         dd $slurpy-hash if $debug;
         make $slurpy-hash;
     }
+    method deculator-spec($/) {
+        my $deculator-spec = '';
+        if $/<dec-spec> {
+            $deculator-spec = '#= ' ~ $/<dec-spec>.made;
+        }
+        dd $deculator-spec if $debug;
+        make $deculator-spec;
+    }
+    method dec-spec($/) {
+        my $dec-spec = ~$/;
+        dd $dec-spec if $debug;
+        make $dec-spec;
+    }
     method usage-line($/) {
         my %line = prog => $/<prog>.made, fixed-args => $/<fixed-args-spec>.made,
         positional-args => $/<pos-spec>.made, optionals => $/<optionals-spec>.made,
         slurpy-array => $/<slurpy-array-spec>.made, options => $/<options-spec>.made,
-        slurpy-hash => $/<slurpy-hash-spec>.made;
+        slurpy-hash => $/<slurpy-hash-spec>.made, dec-spec => $/<deculator-spec>.made;
         my %usage-line = kind => 'usage-line', value => %line;
         dd %usage-line if $debug;
         make %usage-line;
@@ -425,6 +440,7 @@ sub say-coloured(Str:D $USAGE, Bool:D $nocoloured, *%named-args, *@args --> True
                 my Str $slurpy-array = %value«slurpy-array»;
                 my @options          = %value«options»;
                 my Str $slurpy-hash  = %value«slurpy-hash»;
+                my Str $dec-spec     = %value«dec-spec»;
                 my Str:D $ln = ' ' x 2;
                 $ln ~= $prog ~ ' ';
                 for @fixed-args -> $arg {
@@ -441,6 +457,7 @@ sub say-coloured(Str:D $USAGE, Bool:D $nocoloured, *%named-args, *@args --> True
                     $ln ~= $arg ~ ' ';
                 }
                 $ln ~= $slurpy-hash ~ ' ';
+                $ln ~= $dec-spec ~ ' ';
                 $width = max($width,    wcswidth($ln));
             } else {
             }
@@ -480,6 +497,7 @@ sub say-coloured(Str:D $USAGE, Bool:D $nocoloured, *%named-args, *@args --> True
                 my Str $slurpy-array = %value«slurpy-array»;
                 my @options          = %value«options»;
                 my Str $slurpy-hash  = %value«slurpy-hash»;
+                my Str $dec-spec     = %value«dec-spec»;
                 my Str:D $ln = ' ' x 2;
                 $ln ~= $prog ~ ' ';
                 my Str $ref = ' ' x 2 ~ $prog ~ ' ';
@@ -503,6 +521,8 @@ sub say-coloured(Str:D $USAGE, Bool:D $nocoloured, *%named-args, *@args --> True
                 }
                 $ln ~= $slurpy-hash ~ ' ';
                 $ref ~= $slurpy-hash ~ ' ';
+                $ln ~= $dec-spec ~ ' ';
+                $ref ~= $dec-spec ~ ' ';
                 printf("%-*s\n", $width, left($ln, $width, :$ref));
                 $output = True;
             }
@@ -519,6 +539,7 @@ sub say-coloured(Str:D $USAGE, Bool:D $nocoloured, *%named-args, *@args --> True
                     my Str $slurpy-array = %value«slurpy-array»;
                     my @options          = %value«options»;
                     my Str $slurpy-hash  = %value«slurpy-hash»;
+                    my Str $dec-spec     = %value«dec-spec»;
                     my Str:D $ln = ' ' x 2;
                     $ln ~= $prog ~ ' ';
                     my Str $ref = ' ' x 2 ~ $prog ~ ' ';
@@ -542,6 +563,8 @@ sub say-coloured(Str:D $USAGE, Bool:D $nocoloured, *%named-args, *@args --> True
                     }
                     $ln ~= $slurpy-hash ~ ' ';
                     $ref ~= $slurpy-hash ~ ' ';
+                    $ln ~= $dec-spec ~ ' ';
+                    $ref ~= $dec-spec ~ ' ';
                     printf("%-*s\n", $width, left($ln, $width, :$ref));
                     $output = True;
                 }
@@ -619,6 +642,7 @@ sub say-coloured(Str:D $USAGE, Bool:D $nocoloured, *%named-args, *@args --> True
             my Str $slurpy-array = %value«slurpy-array»;
             my @options          = %value«options»;
             my Str $slurpy-hash  = %value«slurpy-hash»;
+            my Str $dec-spec     = %value«dec-spec»;
             my Str:D $ln = ' ' x 2;
             $ln ~= t.color(0,255,0) ~ $prog ~ ' ' ~ t.color(255,0,255);
             my Str $ref = ' ' x 2 ~ $prog ~ ' ';
@@ -644,6 +668,8 @@ sub say-coloured(Str:D $USAGE, Bool:D $nocoloured, *%named-args, *@args --> True
             }
             $ln ~= t.color(255, 128, 128) ~ $slurpy-hash ~ ' ';
             $ref ~= $slurpy-hash ~ ' ';
+            $ln ~= t.color(155, 125, 255) ~ $dec-spec ~ ' ';
+            $ref ~= $dec-spec ~ ' ';
             put t.bg-blue ~ t.bold ~ sprintf("%-*s", $width, left($ln, $width, :$ref)) ~ t.text-reset;
             $output = True;
         }
@@ -660,6 +686,7 @@ sub say-coloured(Str:D $USAGE, Bool:D $nocoloured, *%named-args, *@args --> True
                 my Str $slurpy-array = %value«slurpy-array»;
                 my @options          = %value«options»;
                 my Str $slurpy-hash  = %value«slurpy-hash»;
+                my Str $dec-spec     = %value«dec-spec»;
                 my Str:D $ln = ' ' x 2;
                 $ln ~= t.color(0,255,0) ~ $prog ~ ' ' ~ t.color(255,0,255);
                 my Str $ref = ' ' x 2 ~ $prog ~ ' ';
@@ -685,6 +712,8 @@ sub say-coloured(Str:D $USAGE, Bool:D $nocoloured, *%named-args, *@args --> True
                 }
                 $ln ~= t.color(255, 128, 128) ~ $slurpy-hash ~ ' ';
                 $ref ~= $slurpy-hash ~ ' ';
+                $ln ~= t.color(155, 125, 255) ~ $dec-spec ~ ' ';
+                $ref ~= $dec-spec ~ ' ';
                 put t.bg-blue ~ t.bold ~ sprintf("%-*s", $width, left($ln, $width, :$ref)) ~ t.text-reset;
                 $output = True;
             }
