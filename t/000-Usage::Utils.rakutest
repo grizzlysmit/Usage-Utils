@@ -1,5 +1,5 @@
 use v6;
-use lib 'lib';
+use lib 'rakulib';
 use Test;
 
 use Usage::Utils;
