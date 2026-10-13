@@ -1,4 +1,4 @@
-unit module Usage::Utils:ver<0.1.3>:auth<Francis Grizzly Smit (grizzlysmit@smit.id.au)>;
+unit module Usage::Utils:ver<0.1.4>:auth<Francis Grizzly Smit (grizzlysmit@smit.id.au)>;
 
 =begin pod
 
@@ -24,7 +24,7 @@ Table of  Contents
 
 =NAME Usage::Utils 
 =AUTHOR Francis Grizzly Smit (grizzly@smit.id.au)
-=VERSION v0.1.3
+=VERSION v0.1.4
 =TITLE Usage::Utils
 =SUBTITLE A Raku module to provide syntax highlighting for the B<C<$*USAGE>> string. 
 

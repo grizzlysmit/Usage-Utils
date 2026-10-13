@@ -14,7 +14,7 @@
         "Parse::Paths"
     ],
     "provides" : {
-        "Usage::Utils" : "lib/Usage/Utils.rakumod"
+        "Usage::Utils" : "rakulib/Usage/Utils.rakumod"
     },
     "source-url" : "https://github.com/grizzlysmit/Usage-Utils.git",
     "support" : {
@@ -23,7 +23,7 @@
         "bugtracker": "https://github.com/grizzlysmit/Usage-Utils/issues"
     },
     "auth": "zef:grizzlysmit",
-    "version" : "0.1.3",
+    "version" : "0.1.4",
     "tags" : [ "usage", "utils", "colored", "coloured", "highlighted" ],
   "test-depends": [
   ]
