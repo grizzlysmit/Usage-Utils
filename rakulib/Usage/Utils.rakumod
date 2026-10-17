@@ -1,4 +1,4 @@
-unit module Usage::Utils:ver<0.1.6>:auth<Francis Grizzly Smit (grizzlysmit@smit.id.au)>;
+unit module Usage::Utils:ver<0.1.7>:auth<Francis Grizzly Smit (grizzlysmit@smit.id.au)>;
 
 =begin pod
 
@@ -24,7 +24,7 @@ Table of  Contents
 
 =NAME Usage::Utils 
 =AUTHOR Francis Grizzly Smit (grizzly@smit.id.au)
-=VERSION v0.1.6
+=VERSION v0.1.7
 =TITLE Usage::Utils
 =SUBTITLE A Raku module to provide syntax highlighting for the B<C<$*USAGE>> string. 
 
@@ -731,8 +731,10 @@ sub say-version-coloured(Version:D $version, Bool:D $nocolour, *%named-args, *@a
         my Int $version-major    = @version-struct[0];
         my Int $version-minor    = @version-struct[1];
         my Int $version-revision = @version-struct[2];
-        my Str:D $bg-grey = t.bg-color(63, 63, 63);
-        put $bg-grey ~ t.bold ~ t.red ~ 'v' ~ t.green ~ $version-major ~ t.red ~ '.' ~ t.blue ~ $version-minor ~ t.red ~ '.' ~ t.cyan ~ $version-revision ~ t.text-reset;
+        my Str:D $bg-colour = t.bg-color(73, 0, 0);
+        put $bg-colour ~ t.bold ~ sprintf('%*s', wcswidth($version.Str) + 3, ' ') ~ t.text-reset;
+        put $bg-colour ~ t.bold ~ t.red ~ ' v' ~ t.green ~ $version-major ~ t.red ~ '.' ~ t.blue ~ $version-minor ~ t.red ~ '.' ~ t.cyan ~ $version-revision ~ ' ' ~ t.text-reset;
+        put $bg-colour ~ t.bold ~ sprintf('%*s', wcswidth($version.Str) + 3, ' ') ~ t.text-reset;
     }
 } # sub say-version-coloured(Str:D $USAGE, Bool:D $nocolour, *%named-args, *@args --> True) is export #
 

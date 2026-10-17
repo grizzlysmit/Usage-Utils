@@ -23,7 +23,7 @@
         "bugtracker": "https://github.com/grizzlysmit/Usage-Utils/issues"
     },
     "auth": "zef:grizzlysmit",
-    "version" : "0.1.6",
+    "version" : "0.1.7",
     "tags" : [ "usage", "utils", "colored", "coloured", "highlighted" ],
   "test-depends": [
   ]
