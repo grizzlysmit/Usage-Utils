@@ -1,4 +1,4 @@
-unit module Usage::Utils:ver<0.1.8>:auth<Francis Grizzly Smit (grizzlysmit@smit.id.au)>;
+unit module Usage::Utils:ver<0.1.9>:auth<Francis Grizzly Smit (grizzlysmit@smit.id.au)>;
 
 =begin pod
 
@@ -24,7 +24,7 @@ Table of  Contents
 
 =NAME Usage::Utils 
 =AUTHOR Francis Grizzly Smit (grizzly@smit.id.au)
-=VERSION v0.1.8
+=VERSION v0.1.9
 =TITLE Usage::Utils
 =SUBTITLE A Raku module to provide syntax highlighting for the B<C<$*USAGE>> string. 
 
@@ -148,7 +148,7 @@ grammar UsageStr is BasePaths is export {
     regex slurpy-array-spec { [ \h* <slurpy-array> ]? }
     token options-spec      { [ \h* <options> ]? }
     token slurpy-hash-spec  { [ \h* <slurpy-hash> ]? }
-    token deculator-spec    { [ \h* '-- ' \h* <dec-spec> ]? }
+    token deculator-spec    { [ \h* '-- '  <dec-spec> ]? }
     token prog              { [ <prog-name> <!before [ '/' || '~/' || '~' ] > || <base-path> <prog-name> ] }
     token prog-name         { \w+ [ [ '-' || '+' || ':' || '@' || '=' || ',' || '%' || '.' ]+ \w+ ]* }
     token fixed-args        { [ <fixed-arg> [ \h+ <fixed-arg> ]* ]? }
@@ -159,9 +159,11 @@ grammar UsageStr is BasePaths is export {
     regex optional          { '[<' [ \w+ [ '-' \w+ ]* ] '>]' }
     regex slurpy-array      { [ '[<' [ \w+ [ '-' \w+ ]* ] '>' \h '...' ']' ] }
     regex options           { [ <option> [ \h+ <option> ]* ] }
-    regex option            { [ <int-opt> || <other-opt> || <bool-opt> ] }
-    regex int-opt           { [ '[' <opts> '[=Int]]' ] }
+    regex option            { [ <int-opt> || <any-opt> || <other-opt> || <alt-opt> || <bool-opt> ] }
+    regex int-opt           { [ '[' <opts> '[=Int' [ \h+ <where-clause> ]? ']]' ] }
+    regex any-opt           { [ '[' <opts> '[=Any' [ \h+ <where-clause> ]? ']]' ] }
     regex other-opt         { [ '[' <opts> '=<' <type> [ \h+ <where-clause> \h* ]? '>]' ] }
+    regex alt-opt           { [ '[' <opts> '[=' <type> [ \h+ <where-clause> \h* ]? ']]' ] }
     regex where-clause      { [ 'where' \h* '{' \h* <values> \h* '}' ] }
     regex values            { [ <dots> ] }
     regex dots              { [ '...' ] }
@@ -170,7 +172,7 @@ grammar UsageStr is BasePaths is export {
     regex opt               { [ <long-opt> || <short-opt> ] }
     regex short-opt         { [ '-' \w ] }
     regex long-opt          { [ '--' \w ** {2 .. Inf} [ '-' \w+ ]* ] }
-    regex type              { [ 'Str' || 'Num' || 'Rat' || 'Complex' || [ \w+ [ [ '-' || '::' ] \w+ ]* ] ] }
+    regex type              { [ 'Str' || 'Num' || 'Rat' || 'Complex' || 'Any' || [ \w+ [ [ '-' || '::' ] \w+ ]* ] ] }
     regex slurpy-hash       { [ '[--<' [ \w+ [ '-' \w+ ]* ] '>=...]' ] }
     regex dec-spec          { [ <-[\v]>+ ] }
 }
@@ -277,16 +279,33 @@ class UsageStrActions does BasePathsActions is export {
             $option = $/<int-opt>.made;
         } elsif $/<other-opt> {
             $option = $/<other-opt>.made;
+        } elsif $/<alt-opt> {
+            $option = $/<alt-opt>.made;
         } elsif $<bool-opt> {
             $option = $/<bool-opt>.made;
+        } elsif $<any-opt> {
+            $option = $/<any-opt>.made;
         }
         dd $option if $debug;
         make $option;
     }
     method int-opt($/) {
-        my $int-opt = '[' ~ $/<opts>.made ~ '[=Int]]';
+        my $int-opt = '[' ~ $/<opts>.made ~ '[=Int';
+        if $/<where-clause> {
+            $int-opt ~= ' ' ~ $/<where-clause>.made ~ ' ';
+        }
+        $int-opt ~= ']]';
         dd $int-opt if $debug;
         make $int-opt;
+    }
+    method any-opt($/) {
+        my $any-opt = '[' ~ $/<opts>.made ~ '[=Any';
+        if $/<where-clause> {
+            $any-opt ~= ' ' ~ $/<where-clause>.made ~ ' ';
+        }
+        $any-opt ~= ']]';
+        dd $any-opt if $debug;
+        make $any-opt;
     }
     #`«
     regex other-opt         { [ '[' <opts> '=<' <type> [ \h+ <where-clause> ]? '>]' ] }
@@ -319,8 +338,16 @@ class UsageStrActions does BasePathsActions is export {
         }
         $other-opt ~= '>]';
         dd $other-opt if $debug;
-        dd $other-opt if $debug;
         make $other-opt;
+    }
+    method alt-opt($/) {
+        my $alt-opt = '[' ~ $/<opts>.made ~ '[=' ~ $/<type>;
+        if $/<where-clause> {
+            $alt-opt ~= ' ' ~ $/<where-clause>.made ~ ' ';
+        }
+        $alt-opt ~= ']]';
+        dd $alt-opt if $debug;
+        make $alt-opt;
     }
     method bool-opt($/) {
         my $bool-opt = '[' ~ $/<opts>.made ~ ']';
@@ -372,7 +399,7 @@ class UsageStrActions does BasePathsActions is export {
     method deculator-spec($/) {
         my $deculator-spec = '';
         if $/<dec-spec> {
-            $deculator-spec = '#= ' ~ $/<dec-spec>.made;
+            $deculator-spec = '#| ' ~ ~$/<dec-spec>;
         }
         dd $deculator-spec if $debug;
         make $deculator-spec;
@@ -387,6 +414,7 @@ class UsageStrActions does BasePathsActions is export {
         positional-args => $/<pos-spec>.made, optionals => $/<optionals-spec>.made,
         slurpy-array => $/<slurpy-array-spec>.made, options => $/<options-spec>.made,
         slurpy-hash => $/<slurpy-hash-spec>.made, dec-spec => $/<deculator-spec>.made;
+        dd %line if $debug;
         my %usage-line = kind => 'usage-line', value => %line;
         dd %usage-line if $debug;
         make %usage-line;
@@ -414,16 +442,16 @@ sub say-coloured(Str:D $USAGE, Bool:D $nocoloured, *%named-args, *@args --> True
 =end pod
 
 sub say-coloured(Str:D $USAGE, Bool:D $nocoloured, *%named-args, *@args --> True) is export {
-    #dd $USAGE;
+    dd $USAGE if $debug;
     my @usage = $USAGE.split("\n");
     my Num:D $limit = ((%named-args«limit»:exists) ?? %named-args«limit».Num !! 75.Num);
     #dd @args, %named-args, $limit;
     my $actions = UsageStrActions;
     #my $test = UsageStr.parse(@usage.join("\x0A"), :enc('UTF-8'), :$actions).made;
     #dd $test, $?NL;
-    #dd @usage;
+    dd @usage if $debug;
     my @usage-struct = |(UsageStr.parse(@usage.join("\x0A"), :enc('UTF-8'), :$actions).made);
-    #dd @usage-struct;
+    dd @usage-struct if $debug;
     my Int:D $width = 0;
     if $nocoloured {
         for @usage-struct -> %line {
@@ -707,6 +735,7 @@ sub say-coloured(Str:D $USAGE, Bool:D $nocoloured, *%named-args, *@args --> True
                 $ln ~= t.color(255, 255, 0) ~ $slurpy-array ~ t.red ~ ' ';
                 $ref ~= $slurpy-array ~ ' ';
                 for @options -> $arg {
+                    dd @options, $arg if $debug;
                     $ln ~= $arg ~ ' ';
                     $ref ~= $arg ~ ' ';
                 }
